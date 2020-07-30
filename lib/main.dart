@@ -67,6 +67,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         expression = equation;
         expression = expression.replaceAll('×', '*');
         expression = expression.replaceAll('÷', '/');
+        expression =
+            expression.replaceAll('e', '2.71828183 * 1'); // for  value of e
 
         // *  for expo
         // * expression = "0^0";
@@ -76,7 +78,6 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         // cos 30 deg
         // expression = "cos(30 * 0.01745329251";
 
-        expression = "123 % 100";
         try {
           Parser p = new Parser();
           Expression exp = p.parse(expression);
@@ -84,6 +85,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           ContextModel cm = ContextModel();
 
           result = '${exp.evaluate(EvaluationType.REAL, cm)}';
+          result = (double.parse(result)).toStringAsFixed(6);
         } catch (e) {
           result = "Error";
         }
@@ -165,27 +167,27 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.09, Colors.red),
+                        buildButton("bb", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.09, Colors.red),
+                        buildButton("bb", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.09, Colors.red),
+                        buildButton("bb", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.09, Colors.red),
+                        buildButton("bb", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("aa", 1 * 0.09, Colors.red),
+                        buildButton("aa", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // * transition button
-                        buildButton("T", 1 * 0.09, Colors.deepOrange),
+                        buildButton("T", 1 * 0.095, Colors.deepOrange),
                       ]),
                     ],
                   ),
@@ -196,39 +198,39 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("n", 1 * 0.09, Colors.black54),
-                        buildButton("n", 1 * 0.09, Colors.black54),
-                        buildButton("n", 1 * 0.09, Colors.black54),
+                        buildButton("n", 1 * 0.095, Colors.black54),
+                        buildButton("n", 1 * 0.095, Colors.black54),
+                        buildButton("(", 1 * 0.095, Colors.black54),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("C", 1 * 0.09, Colors.redAccent),
-                        buildButton("⌫", 1 * 0.09, Colors.deepPurple),
-                        buildButton("%", 1 * 0.09, Colors.deepPurple),
+                        buildButton("C", 1 * 0.095, Colors.redAccent),
+                        buildButton("⌫", 1 * 0.095, Colors.deepPurple),
+                        buildButton("%", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("7", 1 * 0.09, Colors.black54),
-                        buildButton("8", 1 * 0.09, Colors.black54),
-                        buildButton("9", 1 * 0.09, Colors.black54),
+                        buildButton("7", 1 * 0.095, Colors.black54),
+                        buildButton("8", 1 * 0.095, Colors.black54),
+                        buildButton("9", 1 * 0.095, Colors.black54),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("4", 1 * 0.09, Colors.black54),
-                        buildButton("5", 1 * 0.09, Colors.black54),
-                        buildButton("6", 1 * 0.09, Colors.black54),
+                        buildButton("4", 1 * 0.095, Colors.black54),
+                        buildButton("5", 1 * 0.095, Colors.black54),
+                        buildButton("6", 1 * 0.095, Colors.black54),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("1", 1 * 0.09, Colors.black54),
-                        buildButton("2", 1 * 0.09, Colors.black54),
-                        buildButton("3", 1 * 0.09, Colors.black54),
+                        buildButton("1", 1 * 0.095, Colors.black54),
+                        buildButton("2", 1 * 0.095, Colors.black54),
+                        buildButton("3", 1 * 0.095, Colors.black54),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("tb", 1 * 0.09, Colors.black54),
-                        buildButton(".", 1 * 0.09, Colors.black54),
-                        buildButton("0", 1 * 0.09, Colors.black54),
+                        buildButton("e", 1 * 0.095, Colors.black54),
+                        buildButton(".", 1 * 0.095, Colors.black54),
+                        buildButton("0", 1 * 0.095, Colors.black54),
                       ]),
                     ],
                   ),
@@ -238,22 +240,22 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        buildButton("n", 1 * 0.09, Colors.deepPurpleAccent),
+                        buildButton(")", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
-                        buildButton("+", 1 * 0.09, Colors.deepPurple),
+                        buildButton("+", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
-                        buildButton("-", 1 * 0.09, Colors.deepPurple),
+                        buildButton("-", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
-                        buildButton("×", 1 * 0.09, Colors.deepPurple),
+                        buildButton("×", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
-                        buildButton("÷", 1 * 0.09, Colors.deepPurple),
+                        buildButton("÷", 1 * 0.095, Colors.deepPurple),
                       ]),
                       TableRow(children: [
-                        buildButton("=", 1 * 0.09, Colors.redAccent),
+                        buildButton("=", 1 * 0.095, Colors.redAccent),
                       ]),
                     ],
                   ),
