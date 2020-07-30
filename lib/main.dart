@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
+import 'dart:math';
 
 void main() {
   runApp(MyApp());
@@ -34,6 +35,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   double equationFontSize = 38.0;
   double resultFontSize = 48.0;
 
+  bool _test = true;
+
   buttonPressed(String buttonText) {
     setState(() {
       if (buttonText == "C") {
@@ -49,6 +52,14 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         if (equation == "") {
           equation = "0";
         }
+      } else if (buttonText == '%') {
+        if ((!equation.isEmpty || equation != "0")) {
+          result = (int.parse(equation) / 100).toString();
+        }
+      }
+      // ** transition button condition
+      else if (buttonText == "T") {
+        _test = !_test;
       } else if (buttonText == "=") {
         equationFontSize = 38.0;
         resultFontSize = 48.0;
@@ -57,6 +68,15 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         expression = expression.replaceAll('×', '*');
         expression = expression.replaceAll('÷', '/');
 
+        // *  for expo
+        // * expression = "0^0";
+
+        // expression = "2^-1";
+
+        // cos 30 deg
+        // expression = "cos(30 * 0.01745329251";
+
+        expression = "123 % 100";
         try {
           Parser p = new Parser();
           Expression exp = p.parse(expression);
@@ -85,7 +105,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   Widget buildButton(
       String buttonText, double buttonHeight, Color buttonColor) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.1 * buttonHeight,
+      height: MediaQuery.of(context).size.height * buttonHeight,
       color: buttonColor,
       child: FlatButton(
         shape: RoundedRectangleBorder(
@@ -93,7 +113,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           side: BorderSide(
               color: Colors.white, width: 1.0, style: BorderStyle.solid),
         ),
-        padding: EdgeInsets.all(16.0),
+        // todo padding logic
+        padding: EdgeInsets.all(12.0),
         onPressed: () => buttonPressed(buttonText),
         child: Text(
           buttonText,
@@ -108,96 +129,235 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Simple Calculator"),
-      ),
-      body: new Column(
-        children: <Widget>[
-          new Container(
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: FittedBox(
+    if (_test == true) {
+      // * return advanced calc options
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Simple Calculator"),
+        ),
+        body: new Column(
+          children: <Widget>[
+            new Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              child: FittedBox(
+                child: Text(
+                  equation,
+                  style: TextStyle(fontSize: equationFontSize),
+                ),
+              ),
+            ),
+            new Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
               child: Text(
-                equation,
-                style: TextStyle(fontSize: equationFontSize),
+                result,
+                style: TextStyle(fontSize: resultFontSize),
               ),
             ),
-          ),
-          new Container(
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Text(
-              result,
-              style: TextStyle(fontSize: resultFontSize),
+            Expanded(child: Divider()),
+            new Row(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Table(
+                    children: [
+                      TableRow(children: [
+                        // ! row
+                        buildButton("bb", 1 * 0.09, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("bb", 1 * 0.09, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("bb", 1 * 0.09, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("bb", 1 * 0.09, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("aa", 1 * 0.09, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // * transition button
+                        buildButton("T", 1 * 0.09, Colors.deepOrange),
+                      ]),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.60,
+                  child: Table(
+                    children: [
+                      TableRow(children: [
+                        // ! row
+                        buildButton("n", 1 * 0.09, Colors.black54),
+                        buildButton("n", 1 * 0.09, Colors.black54),
+                        buildButton("n", 1 * 0.09, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("C", 1 * 0.09, Colors.redAccent),
+                        buildButton("⌫", 1 * 0.09, Colors.deepPurple),
+                        buildButton("%", 1 * 0.09, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("7", 1 * 0.09, Colors.black54),
+                        buildButton("8", 1 * 0.09, Colors.black54),
+                        buildButton("9", 1 * 0.09, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("4", 1 * 0.09, Colors.black54),
+                        buildButton("5", 1 * 0.09, Colors.black54),
+                        buildButton("6", 1 * 0.09, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("1", 1 * 0.09, Colors.black54),
+                        buildButton("2", 1 * 0.09, Colors.black54),
+                        buildButton("3", 1 * 0.09, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("tb", 1 * 0.09, Colors.black54),
+                        buildButton(".", 1 * 0.09, Colors.black54),
+                        buildButton("0", 1 * 0.09, Colors.black54),
+                      ]),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Table(
+                    children: [
+                      TableRow(children: [
+                        buildButton("n", 1 * 0.09, Colors.deepPurpleAccent),
+                      ]),
+                      TableRow(children: [
+                        buildButton("+", 1 * 0.09, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("-", 1 * 0.09, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("×", 1 * 0.09, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("÷", 1 * 0.09, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("=", 1 * 0.09, Colors.redAccent),
+                      ]),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      );
+    }
+    // ** important else return normal calc
+    else {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Simple Calculator"),
+        ),
+        body: new Column(
+          children: <Widget>[
+            new Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              child: FittedBox(
+                child: Text(
+                  equation,
+                  style: TextStyle(fontSize: equationFontSize),
+                ),
+              ),
             ),
-          ),
-          Expanded(child: Divider()),
-
-          // ? 75% layout
-          new Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width * 0.75,
-                child: Table(
-                  children: [
-                    TableRow(children: [
-                      // ! row
-                      buildButton("C", 1, Colors.redAccent),
-                      buildButton("⌫", 1, Colors.deepPurple),
-                      buildButton("÷", 1, Colors.deepPurple),
-                    ]),
-                    TableRow(children: [
-                      // ! row
-                      buildButton("7", 1, Colors.black54),
-                      buildButton("8", 1, Colors.black54),
-                      buildButton("9", 1, Colors.black54),
-                    ]),
-                    TableRow(children: [
-                      // ! row
-                      buildButton("4", 1, Colors.black54),
-                      buildButton("5", 1, Colors.black54),
-                      buildButton("6", 1, Colors.black54),
-                    ]),
-                    TableRow(children: [
-                      // ! row
-                      buildButton("1", 1, Colors.black54),
-                      buildButton("2", 1, Colors.black54),
-                      buildButton("3", 1, Colors.black54),
-                    ]),
-                    TableRow(children: [
-                      // ! row
-                      buildButton(".", 1, Colors.black54),
-                      buildButton("0", 1, Colors.black54),
-                      buildButton("00", 1, Colors.black54),
-                    ]),
-                  ],
-                ),
+            new Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              child: Text(
+                result,
+                style: TextStyle(fontSize: resultFontSize),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                child: Table(
-                  children: [
-                    TableRow(children: [
-                      buildButton("×", 1, Colors.deepPurple),
-                    ]),
-                    TableRow(children: [
-                      buildButton("+", 1, Colors.deepPurple),
-                    ]),
-                    TableRow(children: [
-                      buildButton("-", 1, Colors.deepPurple),
-                    ]),
-                    TableRow(children: [
-                      buildButton("=", 2, Colors.redAccent),
-                    ])
-                  ],
+            ),
+            Expanded(child: Divider()),
+            new Row(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: Table(
+                    children: [
+                      TableRow(children: [
+                        // ! row
+                        buildButton("C", 0.1, Colors.redAccent),
+                        buildButton("⌫", 0.1, Colors.deepPurple),
+                        buildButton("%", 0.1, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("7", 0.1, Colors.black54),
+                        buildButton("8", 0.1, Colors.black54),
+                        buildButton("9", 0.1, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("4", 0.1, Colors.black54),
+                        buildButton("5", 0.1, Colors.black54),
+                        buildButton("6", 0.1, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("1", 0.1, Colors.black54),
+                        buildButton("2", 0.1, Colors.black54),
+                        buildButton("3", 0.1, Colors.black54),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("T", 0.1, Colors.deepOrange),
+                        buildButton(".", 0.1, Colors.black54),
+                        buildButton("0", 0.1, Colors.black54),
+                      ]),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  child: Table(
+                    children: [
+                      TableRow(children: [
+                        buildButton("+", 0.1, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("-", 0.1, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("×", 0.1, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("÷", 0.1, Colors.deepPurple),
+                      ]),
+                      TableRow(children: [
+                        buildButton("=", 0.1, Colors.redAccent),
+                      ])
+                    ],
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      );
+    }
   }
 }
