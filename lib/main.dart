@@ -73,8 +73,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         if (equation == "0") {
           equation = buttonText;
           // TODO some higher number exp when ui gets distorted.
-          // } else if (equation.length > 24) {
-          //   equation = equation;
+
         } else {
           equation = equation + buttonText;
         }
@@ -118,9 +117,11 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           new Container(
             alignment: Alignment.centerRight,
             padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            child: Text(
-              equation,
-              style: TextStyle(fontSize: equationFontSize),
+            child: FittedBox(
+              child: Text(
+                equation,
+                style: TextStyle(fontSize: equationFontSize),
+              ),
             ),
           ),
           new Container(
