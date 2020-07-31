@@ -4,16 +4,18 @@ import 'package:math_expressions/math_expressions.dart';
 void main() {
   runApp(MyApp());
 }
-
+  
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  // * old theme 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Calculator App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: Colors.blue,
         brightness: Brightness.light,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -21,6 +23,33 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+// ? testing new thing 
+@override
+  Widget build(BuildContext context) {
+    return new DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => new ThemeData(
+              primarySwatch: Colors.indigo,
+              brightness: brightness,
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return new MaterialApp(
+            title: 'Calculator App',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              brightness: Brightness.light,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            home: SimpleCalculator(),
+          );
+        });
+  }
+}
+
 
 class SimpleCalculator extends StatefulWidget {
   @override

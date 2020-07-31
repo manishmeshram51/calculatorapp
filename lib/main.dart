@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
-import 'dart:math';
+import 'package:dynamic_theme/dynamic_theme.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,16 +10,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Calculator App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        brightness: Brightness.light,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: SimpleCalculator(),
-    );
+    return new DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => new ThemeData(
+              primarySwatch: Colors.blue,
+              brightness: brightness,
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return new MaterialApp(
+            title: 'Calculator App',
+            theme: theme,
+            debugShowCheckedModeBanner: false,
+            home: SimpleCalculator(),
+          );
+        });
   }
 }
 
@@ -38,6 +42,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   String angleUnit = "deg"; //can be rad or deg
 
   bool _test = true;
+  bool _darkMode = false;
 
   buttonPressed(String buttonText) {
     setState(() {
@@ -80,17 +85,12 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         expression = expression.replaceAll('÷', '/');
         expression = expression.replaceAll('e', '2.71828183 * 1');
 
-        // *  for expo
-        // * expression = "0^0";
-
-        // expression = "2^-1";
-
-        // cos 30 deg
-        // expression = "cos(30 * 0.01745329251";
-        // expression = "Asin(0.5)";
-        if (angleUnit == "deg") {
+        if ((angleUnit == "deg" && expression.contains('sin')) ||
+            (angleUnit == "deg" && expression.contains('cos'))) {
           expression = expression.replaceAll(')', ' * 0.01745329251 )');
         }
+        // expression = "ln(50)";
+        print(expression);
         try {
           Parser p = new Parser();
           Expression exp = p.parse(expression);
@@ -135,7 +135,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0.0),
           side: BorderSide(
-              color: Colors.white, width: 1.0, style: BorderStyle.solid),
+              color: Colors.white54, width: 1.0, style: BorderStyle.solid),
         ),
         // todo padding logic
         padding: EdgeInsets.all(12.0),
@@ -143,9 +143,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         child: Text(
           buttonText,
           style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.normal,
-              color: Colors.white),
+              fontSize: 30.0, fontWeight: FontWeight.w400, color: Colors.white),
         ),
       ),
     );
@@ -157,7 +155,31 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       // * return advanced calc options
       return Scaffold(
         appBar: AppBar(
-          title: Text("Simple Calculator"),
+          title: Text("Advance Calculator"),
+          leading: GestureDetector(
+            onTap: () {/* Write listener code here */},
+            child: Icon(
+              Icons.menu, // add custom icons also
+            ),
+          ),
+          actions: <Widget>[
+            Padding(
+                padding: EdgeInsets.only(right: 20.0),
+                child: Switch(
+                    activeColor: Colors.blue,
+                    inactiveThumbColor: Colors.black,
+                    value: _darkMode,
+                    onChanged: (value) {
+                      setState(() {
+                        DynamicTheme.of(context).setBrightness(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Brightness.light
+                                : Brightness.dark);
+                        _darkMode = value;
+                        print(_darkMode);
+                      });
+                    })),
+          ],
         ),
         body: new Column(
           children: <Widget>[
@@ -201,7 +223,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.095, Colors.red),
+                        buildButton("ln", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
@@ -220,15 +242,15 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("sin", 1 * 0.095, Colors.black54),
-                        buildButton("cos", 1 * 0.095, Colors.black54),
-                        buildButton("(", 1 * 0.095, Colors.black54),
+                        buildButton("sin", 1 * 0.095, Colors.blue),
+                        buildButton("cos", 1 * 0.095, Colors.blue),
+                        buildButton("(", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("C", 1 * 0.095, Colors.redAccent),
-                        buildButton("⌫", 1 * 0.095, Colors.deepPurple),
-                        buildButton("%", 1 * 0.095, Colors.deepPurple),
+                        buildButton("C", 1 * 0.095, Colors.red),
+                        buildButton("⌫", 1 * 0.095, Colors.blue),
+                        buildButton("%", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
                         // ! row
@@ -250,7 +272,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("e", 1 * 0.095, Colors.black54),
+                        buildButton("e", 1 * 0.095, Colors.red),
                         buildButton(".", 1 * 0.095, Colors.black54),
                         buildButton("0", 1 * 0.095, Colors.black54),
                       ]),
@@ -262,22 +284,22 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        buildButton(")", 1 * 0.095, Colors.deepPurple),
+                        buildButton(")", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("+", 1 * 0.095, Colors.deepPurple),
+                        buildButton("+", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("-", 1 * 0.095, Colors.deepPurple),
+                        buildButton("-", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("×", 1 * 0.095, Colors.deepPurple),
+                        buildButton("×", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("÷", 1 * 0.095, Colors.deepPurple),
+                        buildButton("÷", 1 * 0.095, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("=", 1 * 0.095, Colors.redAccent),
+                        buildButton("=", 1 * 0.095, Colors.red),
                       ]),
                     ],
                   ),
@@ -292,7 +314,32 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     else {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Simple Calculator"),
+          title: Text("Advance Calculator"),
+          leading: GestureDetector(
+            onTap: () {/* Write listener code here */},
+            child: Icon(
+              Icons.menu, // add custom icons also
+            ),
+          ),
+          actions: <Widget>[
+            Padding(
+                padding: EdgeInsets.only(right: 20.0),
+                child: Switch(
+                    activeColor: Colors.blue,
+                    inactiveThumbColor: Colors.black,
+                    value: _darkMode,
+                    onChanged: (value) {
+                      // * here is dark mode logic using package
+                      setState(() {
+                        DynamicTheme.of(context).setBrightness(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Brightness.light
+                                : Brightness.dark);
+                        _darkMode = value;
+                        // print(_darkMode);
+                      });
+                    })),
+          ],
         ),
         body: new Column(
           children: <Widget>[
@@ -324,9 +371,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("C", 0.1, Colors.redAccent),
-                        buildButton("⌫", 0.1, Colors.deepPurple),
-                        buildButton("%", 0.1, Colors.deepPurple),
+                        buildButton("C", 0.1, Colors.red),
+                        buildButton("⌫", 0.1, Colors.blue),
+                        buildButton("%", 0.1, Colors.blue),
                       ]),
                       TableRow(children: [
                         // ! row
@@ -360,19 +407,19 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        buildButton("+", 0.1, Colors.deepPurple),
+                        buildButton("+", 0.1, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("-", 0.1, Colors.deepPurple),
+                        buildButton("-", 0.1, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("×", 0.1, Colors.deepPurple),
+                        buildButton("×", 0.1, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("÷", 0.1, Colors.deepPurple),
+                        buildButton("÷", 0.1, Colors.blue),
                       ]),
                       TableRow(children: [
-                        buildButton("=", 0.1, Colors.redAccent),
+                        buildButton("=", 0.1, Colors.red),
                       ])
                     ],
                   ),
