@@ -35,6 +35,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   double equationFontSize = 38.0;
   double resultFontSize = 48.0;
 
+  String angleUnit = "deg"; //can be rad or deg
+
   bool _test = true;
 
   buttonPressed(String buttonText) {
@@ -53,13 +55,22 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           equation = "0";
         }
       } else if (buttonText == '%') {
-        if ((!equation.isEmpty || equation != "0")) {
-          result = (int.parse(equation) / 100).toString();
+        if ((equation.isNotEmpty || equation != "0")) {
+          result = (double.parse(equation) / 100).toString();
+
+          // ? testingr
+          equation = result;
         }
       }
       // ** transition button condition
-      else if (buttonText == "T") {
+      else if (buttonText == "⌘") {
         _test = !_test;
+      } else if (buttonText == "deg" || buttonText == "rad") {
+        if (angleUnit == "rad") {
+          angleUnit = "deg";
+        } else {
+          angleUnit = "rad";
+        }
       } else if (buttonText == "=") {
         equationFontSize = 38.0;
         resultFontSize = 48.0;
@@ -67,8 +78,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         expression = equation;
         expression = expression.replaceAll('×', '*');
         expression = expression.replaceAll('÷', '/');
-        expression =
-            expression.replaceAll('e', '2.71828183 * 1'); // for  value of e
+        expression = expression.replaceAll('e', '2.71828183 * 1');
 
         // *  for expo
         // * expression = "0^0";
@@ -77,7 +87,10 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
         // cos 30 deg
         // expression = "cos(30 * 0.01745329251";
-
+        // expression = "Asin(0.5)";
+        if (angleUnit == "deg") {
+          expression = expression.replaceAll(')', ' * 0.01745329251 )');
+        }
         try {
           Parser p = new Parser();
           Expression exp = p.parse(expression);
@@ -85,7 +98,10 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           ContextModel cm = ContextModel();
 
           result = '${exp.evaluate(EvaluationType.REAL, cm)}';
-          result = (double.parse(result)).toStringAsFixed(6);
+          result = (double.parse(result)).toStringAsFixed(4);
+
+          // ? testingr
+          equation = result;
         } catch (e) {
           result = "Error";
         }
@@ -94,10 +110,16 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         resultFontSize = 38.0;
         if (equation == "0") {
           equation = buttonText;
-          // TODO some higher number exp when ui gets distorted.
-
         } else {
-          equation = equation + buttonText;
+          if (buttonText == "xʸ") {
+            equation = equation + buttonText.replaceAll("xʸ", "^");
+          } else if (buttonText == "√x") {
+            equation = equation + buttonText.replaceAll("√x", "^(1/2)");
+          } else if (buttonText == "1/x") {
+            equation = buttonText.replaceAll("1/x", "1/${equation}");
+          } else {
+            equation = equation + buttonText;
+          }
         }
       }
     });
@@ -167,7 +189,15 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.095, Colors.red),
+                        buildButton(angleUnit, 1 * 0.095, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("xʸ", 1 * 0.095, Colors.red),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("√x", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // ! row
@@ -175,19 +205,11 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("bb", 1 * 0.095, Colors.red),
-                      ]),
-                      TableRow(children: [
-                        // ! row
-                        buildButton("bb", 1 * 0.095, Colors.red),
-                      ]),
-                      TableRow(children: [
-                        // ! row
-                        buildButton("aa", 1 * 0.095, Colors.red),
+                        buildButton("1/x", 1 * 0.095, Colors.red),
                       ]),
                       TableRow(children: [
                         // * transition button
-                        buildButton("T", 1 * 0.095, Colors.deepOrange),
+                        buildButton("⌘", 1 * 0.095, Colors.deepOrange),
                       ]),
                     ],
                   ),
@@ -198,8 +220,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("n", 1 * 0.095, Colors.black54),
-                        buildButton("n", 1 * 0.095, Colors.black54),
+                        buildButton("sin", 1 * 0.095, Colors.black54),
+                        buildButton("cos", 1 * 0.095, Colors.black54),
                         buildButton("(", 1 * 0.095, Colors.black54),
                       ]),
                       TableRow(children: [
@@ -326,7 +348,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("T", 0.1, Colors.deepOrange),
+                        buildButton("⌘", 0.1, Colors.deepOrange),
                         buildButton(".", 0.1, Colors.black54),
                         buildButton("0", 0.1, Colors.black54),
                       ]),
@@ -363,3 +385,5 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     }
   }
 }
+
+// ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ 	√
