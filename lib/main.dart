@@ -43,6 +43,21 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   bool _test = true;
   bool _darkMode = false;
+  // * to check if string contains numeric or not
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
+
+// * to check if string is operator or not
+  bool isOperator(String s) {
+    if ((s == "+") || (s == "-") || (s == "×") || (s == "÷") || (s == "^")) {
+      return true;
+    }
+    return false;
+  }
 
   // * button pressed logic
   buttonPressed(String buttonText) {
@@ -90,7 +105,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
             (angleUnit == "deg" && expression.contains('cos'))) {
           expression = expression.replaceAll(')', ' * 0.01745329251 )');
         }
-        // expression = "ln(50)";
+
+        // for debug the expression
         print(expression);
         try {
           Parser p = new Parser();
@@ -101,7 +117,6 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           result = '${exp.evaluate(EvaluationType.REAL, cm)}';
           result = (double.parse(result)).toStringAsFixed(4);
 
-          // ? testingr
           equation = result;
         } catch (e) {
           result = "Error";
@@ -119,7 +134,16 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           } else if (buttonText == "1/x") {
             equation = buttonText.replaceAll("1/x", "1/${equation}");
           } else {
-            equation = equation + buttonText;
+            // ! working here
+            if ((equation.length >= 2) &&
+                (equation[equation.length - 1] == buttonText) &&
+                (!isNumeric(equation[equation.length - 1]))) {
+              equation = equation;
+
+              print(equation);
+            } else {
+              equation = equation + buttonText;
+            }
           }
         }
       }
