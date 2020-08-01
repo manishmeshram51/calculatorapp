@@ -131,14 +131,14 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       Color textColor) {
     return Container(
       height: MediaQuery.of(context).size.height * buttonHeight,
-      color: _darkMode
-          ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
-          : buttonColor,
       child: FlatButton(
+        color: _darkMode
+            ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
+            : buttonColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0.0),
           side: BorderSide(
-              color: _darkMode ? Colors.black38 : Colors.white,
+              color: _darkMode ? Colors.black26 : Colors.white,
               width: 1.0,
               style: BorderStyle.solid),
         ),
@@ -164,7 +164,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       // * return advanced calc options
       return Scaffold(
         appBar: AppBar(
-          title: Text("Advance Calculator"),
+          title: Text("Advanced Calculator"),
           leading: GestureDetector(
             onTap: () {/* Write listener code here */},
             child: Icon(
@@ -329,7 +329,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     else {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Advance Calculator"),
+          title: Text("Simple Calculator"),
           leading: GestureDetector(
             onTap: () {/* Write listener code here */},
             child: Icon(
