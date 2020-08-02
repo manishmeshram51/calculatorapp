@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,6 +34,10 @@ class SimpleCalculator extends StatefulWidget {
 }
 
 class _SimpleCalculatorState extends State<SimpleCalculator> {
+  Future<SharedPreferences> _prefs =
+      SharedPreferences.getInstance(); // shared preferences
+
+  Future<bool> _darkMode;
   String equation = "0";
   String result = "0";
   String expression = "0";
@@ -41,8 +46,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   String angleUnit = "deg"; //can be rad or deg
 
-  bool _test = true;
-  bool _darkMode = false;
+  bool _transitionSA = false; // simple to advaced functions
+  // bool _darkMode = false;
   // * to check if string contains numeric or not
   bool isNumeric(String s) {
     if (s == null) {
@@ -57,6 +62,35 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       return true;
     }
     return false;
+  }
+
+// ! error
+  void setBoolToSF(bool boolValue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkMode', boolValue);
+  }
+
+// ! erroe
+  getBoolValuesSF() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      //Return bool
+      bool boolValue = prefs.getBool('darkMode');
+
+      return boolValue;
+    } catch (e) {
+      print("getbool" + e);
+    }
+  }
+
+  // ? init state for loading the shared preferences data initially
+  @override
+  void initState() {
+    // ! check
+    super.initState();
+    _darkMode = _prefs.then((SharedPreferences prefs) {
+      return (prefs.getInt('darkMode') ?? false);
+    });
   }
 
   // * button pressed logic
@@ -85,7 +119,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       }
       // ** transition button condition
       else if (buttonText == "⌘") {
-        _test = !_test;
+        _transitionSA = !_transitionSA;
       } else if (buttonText == "deg" || buttonText == "rad") {
         if (angleUnit == "rad") {
           angleUnit = "deg";
@@ -156,13 +190,13 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     return Container(
       height: MediaQuery.of(context).size.height * buttonHeight,
       child: FlatButton(
-        color: _darkMode
+        color: getBoolValuesSF()
             ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
             : buttonColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0.0),
           side: BorderSide(
-              color: _darkMode ? Colors.black26 : Colors.white,
+              color: getBoolValuesSF() ? Colors.black26 : Colors.white,
               width: 1.0,
               style: BorderStyle.solid),
         ),
@@ -174,7 +208,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           style: TextStyle(
               fontSize: 26.0,
               fontWeight: FontWeight.w400,
-              color: _darkMode
+              color: getBoolValuesSF()
                   ? (textColor == Colors.black ? Colors.white : textColor)
                   : textColor),
         ),
@@ -184,7 +218,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   @override
   Widget build(BuildContext context) {
-    if (_test == true) {
+    if (_transitionSA == true) {
       // * return advanced calc options
       return Scaffold(
         appBar: AppBar(
@@ -201,14 +235,16 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                 child: Switch(
                     activeColor: Colors.orange,
                     inactiveThumbColor: Colors.black,
-                    value: _darkMode,
+                    value: getBoolValuesSF(), // !
                     onChanged: (value) {
                       setState(() {
                         DynamicTheme.of(context).setBrightness(
                             Theme.of(context).brightness == Brightness.dark
                                 ? Brightness.light
                                 : Brightness.dark);
-                        _darkMode = value;
+                        // !
+                        // _darkMode = value;
+
                         print(_darkMode);
                       });
                     })),
@@ -366,7 +402,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                 child: Switch(
                     activeColor: Colors.deepOrange,
                     inactiveThumbColor: Colors.black,
-                    value: _darkMode,
+                    value: getBoolValuesSF(), //!
                     onChanged: (value) {
                       // * here is dark mode logic using package
                       setState(() {
@@ -374,7 +410,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                             Theme.of(context).brightness == Brightness.dark
                                 ? Brightness.light
                                 : Brightness.dark);
-                        _darkMode = value;
+// !
+                        // _darkMode = value;
                         // print(_darkMode);
                       });
                     })),
