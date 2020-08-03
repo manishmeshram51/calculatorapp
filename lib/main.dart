@@ -37,7 +37,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   Future<SharedPreferences> _prefs =
       SharedPreferences.getInstance(); // shared preferences
 
-  bool _darkMode = false;
+  // ! danger
+  Future<bool> _darkmode;
+  bool darkMode = false;
   String equation = "0";
   String result = "0";
   String expression = "0";
@@ -68,17 +70,18 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   void setBoolToSF(bool boolValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('darkMode', boolValue);
-    print("dark mode set: " + boolValue.toString());
+    print("inside set bool value dark mode set: " + boolValue.toString());
+    print("get value");
+    print(prefs.getBool('darkMode'));
+    getBoolValuesSF();
   }
 
 // ! erroe
   getBoolValuesSF() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      //Return bool
-      bool darkModeSp = prefs.getBool('darkMode');
-
-      return darkModeSp;
+      print("inside getboolvaluesf");
+      return prefs.getBool('darkMode');
     } catch (e) {
       print("getbool" + e);
     }
@@ -89,9 +92,10 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   void initState() {
     // ! check
     super.initState();
-    // _darkMode = _prefs.then((SharedPreferences prefs) {
-    //   return (prefs.getInt('darkMode') ?? false);
-    // });
+    _darkmode = _prefs.then((SharedPreferences prefs) {
+      return (prefs.getBool('darkMode') ?? false);
+    });
+    print("inside init    " + _darkmode.toString());
   }
 
   // * button pressed logic
@@ -192,14 +196,14 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       height: MediaQuery.of(context).size.height * buttonHeight,
       child: FlatButton(
         // ! here
-        color: _darkMode
+        color: getBoolValuesSF()
             ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
             : buttonColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0.0),
           side: BorderSide(
               // !here
-              color: _darkMode ? Colors.black26 : Colors.white,
+              color: darkMode ? Colors.black26 : Colors.white,
               width: 1.0,
               style: BorderStyle.solid),
         ),
@@ -212,7 +216,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               fontSize: 26.0,
               fontWeight: FontWeight.w400,
               // !here
-              color: _darkMode
+              color: darkMode
                   ? (textColor == Colors.black ? Colors.white : textColor)
                   : textColor),
         ),
@@ -239,7 +243,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                 child: Switch(
                     activeColor: Colors.orange,
                     inactiveThumbColor: Colors.black,
-                    value: _darkMode, // !
+                    value: darkMode, // !
                     onChanged: (value) {
                       setState(() {
                         DynamicTheme.of(context).setBrightness(
@@ -247,9 +251,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                                 ? Brightness.light
                                 : Brightness.dark);
                         // !
-                        _darkMode = !_darkMode;
-                        setBoolToSF(_darkMode);
-                        print(_darkMode);
+                        darkMode = !darkMode;
+                        setBoolToSF(darkMode);
+                        print("check    " + darkMode.toString());
                       });
                     })),
           ],
@@ -406,7 +410,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                 child: Switch(
                     activeColor: Colors.deepOrange,
                     inactiveThumbColor: Colors.black,
-                    value: _darkMode, //!
+                    value: darkMode, //!
                     onChanged: (value) {
                       // * here is dark mode logic using package
                       setState(() {
@@ -415,8 +419,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                                 ? Brightness.light
                                 : Brightness.dark);
                         // !
-                        _darkMode = !_darkMode;
-                        print(_darkMode);
+                        darkMode = !darkMode;
+                        // print(_darkMode);
                       });
                     })),
           ],

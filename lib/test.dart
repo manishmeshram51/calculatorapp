@@ -63,7 +63,6 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   double equationFontSize = 38.0;
   double resultFontSize = 48.0;
 
-  bool _test = true;
 
   buttonPressed(String buttonText) {
     setState(() {
