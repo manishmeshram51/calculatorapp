@@ -266,3 +266,47 @@ Widget buildButton(String buttonText, double buttonHeight, Color buttonColor,
       ),
     );
   }
+// **new 
+  // * button builder widget
+  Widget buildButton(String buttonText, double buttonHeight, Color buttonColor,
+      Color textColor) {
+    return FutureBuilder(
+      future: getBoolValuesSP(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          dMode = snapshot.data;
+          return Container(
+            height: MediaQuery.of(context).size.height * buttonHeight,
+            child: FlatButton(
+              // ! here
+              color: dMode
+                  ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
+                  : buttonColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+                side: BorderSide(
+                    // !here
+                    color: dMode ? Colors.black26 : Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid),
+              ),
+              // todo padding logic
+              padding: EdgeInsets.all(12.0),
+              onPressed: () => buttonPressed(buttonText),
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w400,
+                    // !here
+                    color: dMode
+                        ? (textColor == Colors.black ? Colors.white : textColor)
+                        : textColor),
+              ),
+            ),
+          );
+        }
+        return CircularProgressIndicator();
+      },
+    );
+  }

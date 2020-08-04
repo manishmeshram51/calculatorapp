@@ -70,15 +70,14 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   void setBoolToSP(bool boolValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('darkMode', boolValue);
-    print("inside set bool value dark mode to set on sp: " +
-        boolValue.toString());
+    // print("inside set bool " + boolValue.toString());
   }
 
   // ! erroe
   getBoolValuesSP() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print("inside getboolvaluesf ${prefs.getBool('darkMode')}");
+      // print("inside getboolvaluesf ${prefs.getBool('darkMode')}");
 
       return prefs.getBool('darkMode');
     } catch (e) {
@@ -92,10 +91,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     // ! check
     super.initState();
     _darkMode = _prefs.then((SharedPreferences prefs) {
-      bool test = prefs.getBool('darkMode') ?? false;
-      print("insdie init but ->${test}");
+      dMode = prefs.getBool('darkMode') ?? false;
       // setBoolToSP(test);
-      return (test);
+      return (dMode);
     });
     print("inside init ${_darkMode}");
   }
@@ -195,45 +193,36 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   // * button builder widget
   Widget buildButton(String buttonText, double buttonHeight, Color buttonColor,
-      Color textColor) {
-    return FutureBuilder(
-      future: getBoolValuesSP(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          dMode = snapshot.data;
-          return Container(
-            height: MediaQuery.of(context).size.height * buttonHeight,
-            child: FlatButton(
-              // ! here
+      Color textColor, bool dMode) {
+    return Container(
+      height: MediaQuery.of(context).size.height * buttonHeight,
+      child: FlatButton(
+        // ! here
+        color: dMode
+            ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
+            : buttonColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+          side: BorderSide(
+              // !here
+              color: dMode ? Colors.black26 : Colors.white,
+              width: 1.0,
+              style: BorderStyle.solid),
+        ),
+        // todo padding logic
+        padding: EdgeInsets.all(12.0),
+        onPressed: () => buttonPressed(buttonText),
+        child: Text(
+          buttonText,
+          style: TextStyle(
+              fontSize: 26.0,
+              fontWeight: FontWeight.w400,
+              // !here
               color: dMode
-                  ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
-                  : buttonColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0.0),
-                side: BorderSide(
-                    // !here
-                    color: dMode ? Colors.black26 : Colors.white,
-                    width: 1.0,
-                    style: BorderStyle.solid),
-              ),
-              // todo padding logic
-              padding: EdgeInsets.all(12.0),
-              onPressed: () => buttonPressed(buttonText),
-              child: Text(
-                buttonText,
-                style: TextStyle(
-                    fontSize: 26.0,
-                    fontWeight: FontWeight.w400,
-                    // !here
-                    color: dMode
-                        ? (textColor == Colors.black ? Colors.white : textColor)
-                        : textColor),
-              ),
-            ),
-          );
-        }
-        return CircularProgressIndicator();
-      },
+                  ? (textColor == Colors.black ? Colors.white : textColor)
+                  : textColor),
+        ),
+      ),
     );
   }
 
@@ -256,7 +245,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   dMode = snapshot.data;
-                  print("inside fb $dMode");
+                  // print("inside fb $dMode");
                   return Padding(
                       padding: EdgeInsets.only(right: 20.0),
                       child: Switch(
@@ -312,29 +301,33 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
+                        buildButton(angleUnit, 1 * 0.095, Colors.white,
+                            Colors.red, dMode),
+                      ]),
+                      TableRow(children: [
+                        // ! row
                         buildButton(
-                            angleUnit, 1 * 0.095, Colors.white, Colors.red),
+                            "xʸ", 1 * 0.095, Colors.white, Colors.red, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("xʸ", 1 * 0.095, Colors.white, Colors.red),
+                        buildButton(
+                            "√x", 1 * 0.095, Colors.white, Colors.red, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("√x", 1 * 0.095, Colors.white, Colors.red),
+                        buildButton(
+                            "ln", 1 * 0.095, Colors.white, Colors.red, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("ln", 1 * 0.095, Colors.white, Colors.red),
-                      ]),
-                      TableRow(children: [
-                        // ! row
-                        buildButton("1/x", 1 * 0.095, Colors.white, Colors.red),
+                        buildButton(
+                            "1/x", 1 * 0.095, Colors.white, Colors.red, dMode),
                       ]),
                       TableRow(children: [
                         // * transition button
-                        buildButton(
-                            "⌘", 1 * 0.095, Colors.deepOrange, Colors.white),
+                        buildButton("⌘", 1 * 0.095, Colors.deepOrange,
+                            Colors.white, dMode),
                       ]),
                     ],
                   ),
@@ -346,41 +339,57 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                       TableRow(children: [
                         // ! row
                         buildButton(
-                            "sin", 1 * 0.095, Colors.white, Colors.blue),
+                            "sin", 1 * 0.095, Colors.white, Colors.blue, dMode),
                         buildButton(
-                            "cos", 1 * 0.095, Colors.white, Colors.blue),
-                        buildButton("(", 1 * 0.095, Colors.white, Colors.blue),
+                            "cos", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                        buildButton(
+                            "(", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                      ]),
+                      TableRow(children: [
+                        // ! row
+                        buildButton("C", 1 * 0.095, Colors.deepOrange,
+                            Colors.white, dMode),
+                        buildButton(
+                            "⌫", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                        buildButton(
+                            "%", 1 * 0.095, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
                         buildButton(
-                            "C", 1 * 0.095, Colors.deepOrange, Colors.white),
-                        buildButton("⌫", 1 * 0.095, Colors.white, Colors.blue),
-                        buildButton("%", 1 * 0.095, Colors.white, Colors.blue),
+                            "7", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "8", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "9", 1 * 0.095, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("7", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("8", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("9", 1 * 0.095, Colors.white, Colors.black),
+                        buildButton(
+                            "4", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "5", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "6", 1 * 0.095, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("4", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("5", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("6", 1 * 0.095, Colors.white, Colors.black),
+                        buildButton(
+                            "1", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "2", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "3", 1 * 0.095, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("1", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("2", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("3", 1 * 0.095, Colors.white, Colors.black),
-                      ]),
-                      TableRow(children: [
-                        // ! row
-                        buildButton("e", 1 * 0.095, Colors.white, Colors.red),
-                        buildButton(".", 1 * 0.095, Colors.white, Colors.black),
-                        buildButton("0", 1 * 0.095, Colors.white, Colors.black),
+                        buildButton(
+                            "e", 1 * 0.095, Colors.white, Colors.red, dMode),
+
+                        buildButton(
+                            ".", 1 * 0.095, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "0", 1 * 0.095, Colors.white, Colors.black, dMode),
                       ]),
                     ],
                   ),
@@ -390,23 +399,28 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        buildButton(")", 1 * 0.095, Colors.white, Colors.blue),
-                      ]),
-                      TableRow(children: [
-                        buildButton("+", 1 * 0.095, Colors.white, Colors.blue),
-                      ]),
-                      TableRow(children: [
-                        buildButton("-", 1 * 0.095, Colors.white, Colors.blue),
-                      ]),
-                      TableRow(children: [
-                        buildButton("×", 1 * 0.095, Colors.white, Colors.blue),
-                      ]),
-                      TableRow(children: [
-                        buildButton("÷", 1 * 0.095, Colors.white, Colors.blue),
+                        buildButton(
+                            ")", 1 * 0.095, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
                         buildButton(
-                            "=", 1 * 0.095, Colors.deepOrange, Colors.white),
+                            "+", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                      ]),
+                      TableRow(children: [
+                        buildButton(
+                            "-", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                      ]),
+                      TableRow(children: [
+                        buildButton(
+                            "×", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                      ]),
+                      TableRow(children: [
+                        buildButton(
+                            "÷", 1 * 0.095, Colors.white, Colors.blue, dMode),
+                      ]),
+                      TableRow(children: [
+                        buildButton("=", 1 * 0.095, Colors.deepOrange,
+                            Colors.white, dMode),
                       ]),
                     ],
                   ),
@@ -434,7 +448,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   dMode = snapshot.data;
-                  print("inside fb $dMode");
+                  // print("inside fb $dMode");
                   return Padding(
                       padding: EdgeInsets.only(right: 20.0),
                       child: Switch(
@@ -491,33 +505,46 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     children: [
                       TableRow(children: [
                         // ! row
-                        buildButton("C", 0.1, Colors.deepOrange, Colors.white),
-                        buildButton("⌫", 0.1, Colors.white, Colors.blue),
-                        buildButton("%", 0.1, Colors.white, Colors.blue),
+                        buildButton(
+                            "C", 0.1, Colors.deepOrange, Colors.white, dMode),
+                        buildButton("⌫", 0.1, Colors.white, Colors.blue, dMode),
+                        buildButton("%", 0.1, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("7", 0.1, Colors.white, Colors.black),
-                        buildButton("8", 0.1, Colors.white, Colors.black),
-                        buildButton("9", 0.1, Colors.white, Colors.black),
+                        buildButton(
+                            "7", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "8", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "9", 0.1, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("4", 0.1, Colors.white, Colors.black),
-                        buildButton("5", 0.1, Colors.white, Colors.black),
-                        buildButton("6", 0.1, Colors.white, Colors.black),
+                        buildButton(
+                            "4", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "5", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "6", 0.1, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("1", 0.1, Colors.white, Colors.black),
-                        buildButton("2", 0.1, Colors.white, Colors.black),
-                        buildButton("3", 0.1, Colors.white, Colors.black),
+                        buildButton(
+                            "1", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "2", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "3", 0.1, Colors.white, Colors.black, dMode),
                       ]),
                       TableRow(children: [
                         // ! row
-                        buildButton("⌘", 0.1, Colors.deepOrange, Colors.white),
-                        buildButton(".", 0.1, Colors.white, Colors.black),
-                        buildButton("0", 0.1, Colors.white, Colors.black),
+                        buildButton(
+                            "⌘", 0.1, Colors.deepOrange, Colors.white, dMode),
+                        buildButton(
+                            ".", 0.1, Colors.white, Colors.black, dMode),
+                        buildButton(
+                            "0", 0.1, Colors.white, Colors.black, dMode),
                       ]),
                     ],
                   ),
@@ -527,19 +554,20 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        buildButton("+", 0.1, Colors.white, Colors.blue),
+                        buildButton("+", 0.1, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
-                        buildButton("-", 0.1, Colors.white, Colors.blue),
+                        buildButton("-", 0.1, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
-                        buildButton("×", 0.1, Colors.white, Colors.blue),
+                        buildButton("×", 0.1, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
-                        buildButton("÷", 0.1, Colors.white, Colors.blue),
+                        buildButton("÷", 0.1, Colors.white, Colors.blue, dMode),
                       ]),
                       TableRow(children: [
-                        buildButton("=", 0.1, Colors.deepOrange, Colors.white),
+                        buildButton(
+                            "=", 0.1, Colors.deepOrange, Colors.white, dMode),
                       ])
                     ],
                   ),
