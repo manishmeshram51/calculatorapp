@@ -38,8 +38,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       SharedPreferences.getInstance(); // shared preferences
 
   // ! danger
-  Future<bool> _darkmode;
-  bool darkMode = false;
+  Future<bool> _darkMode;
+  bool dMode = false;
   String equation = "0";
   String result = "0";
   String expression = "0";
@@ -67,20 +67,19 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   }
 
 // ! error
-  void setBoolToSF(bool boolValue) async {
+  void setBoolToSP(bool boolValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('darkMode', boolValue);
-    print("inside set bool value dark mode set: " + boolValue.toString());
-    print("get value");
-    print(prefs.getBool('darkMode'));
-    getBoolValuesSF();
+    print("inside set bool value dark mode to set on sp: " +
+        boolValue.toString());
   }
 
-// ! erroe
-  getBoolValuesSF() async {
+  // ! erroe
+  getBoolValuesSP() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      print("inside getboolvaluesf");
+      print("inside getboolvaluesf ${prefs.getBool('darkMode')}");
+
       return prefs.getBool('darkMode');
     } catch (e) {
       print("getbool" + e);
@@ -92,10 +91,13 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   void initState() {
     // ! check
     super.initState();
-    _darkmode = _prefs.then((SharedPreferences prefs) {
-      return (prefs.getBool('darkMode') ?? false);
+    _darkMode = _prefs.then((SharedPreferences prefs) {
+      bool test = prefs.getBool('darkMode') ?? false;
+      print("insdie init but ->${test}");
+      // setBoolToSP(test);
+      return (test);
     });
-    print("inside init    " + _darkmode.toString());
+    print("inside init ${_darkMode}");
   }
 
   // * button pressed logic
@@ -124,7 +126,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       }
       // ** transition button condition
       else if (buttonText == "⌘") {
-        _transitionSA = !_transitionSA;
+        setState(() {
+          _transitionSA = !_transitionSA;
+        });
       } else if (buttonText == "deg" || buttonText == "rad") {
         if (angleUnit == "rad") {
           angleUnit = "deg";
@@ -192,35 +196,44 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   // * button builder widget
   Widget buildButton(String buttonText, double buttonHeight, Color buttonColor,
       Color textColor) {
-    return Container(
-      height: MediaQuery.of(context).size.height * buttonHeight,
-      child: FlatButton(
-        // ! here
-        color: getBoolValuesSF()
-            ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
-            : buttonColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0.0),
-          side: BorderSide(
-              // !here
-              color: darkMode ? Colors.black26 : Colors.white,
-              width: 1.0,
-              style: BorderStyle.solid),
-        ),
-        // todo padding logic
-        padding: EdgeInsets.all(12.0),
-        onPressed: () => buttonPressed(buttonText),
-        child: Text(
-          buttonText,
-          style: TextStyle(
-              fontSize: 26.0,
-              fontWeight: FontWeight.w400,
-              // !here
-              color: darkMode
-                  ? (textColor == Colors.black ? Colors.white : textColor)
-                  : textColor),
-        ),
-      ),
+    return FutureBuilder(
+      future: getBoolValuesSP(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          dMode = snapshot.data;
+          return Container(
+            height: MediaQuery.of(context).size.height * buttonHeight,
+            child: FlatButton(
+              // ! here
+              color: dMode
+                  ? (buttonColor != Colors.white ? buttonColor : Colors.black54)
+                  : buttonColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+                side: BorderSide(
+                    // !here
+                    color: dMode ? Colors.black26 : Colors.white,
+                    width: 1.0,
+                    style: BorderStyle.solid),
+              ),
+              // todo padding logic
+              padding: EdgeInsets.all(12.0),
+              onPressed: () => buttonPressed(buttonText),
+              child: Text(
+                buttonText,
+                style: TextStyle(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w400,
+                    // !here
+                    color: dMode
+                        ? (textColor == Colors.black ? Colors.white : textColor)
+                        : textColor),
+              ),
+            ),
+          );
+        }
+        return CircularProgressIndicator();
+      },
     );
   }
 
@@ -238,24 +251,35 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
             ),
           ),
           actions: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(right: 20.0),
-                child: Switch(
-                    activeColor: Colors.orange,
-                    inactiveThumbColor: Colors.black,
-                    value: darkMode, // !
-                    onChanged: (value) {
-                      setState(() {
-                        DynamicTheme.of(context).setBrightness(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Brightness.light
-                                : Brightness.dark);
-                        // !
-                        darkMode = !darkMode;
-                        setBoolToSF(darkMode);
-                        print("check    " + darkMode.toString());
-                      });
-                    })),
+            FutureBuilder(
+              future: getBoolValuesSP(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  dMode = snapshot.data;
+                  print("inside fb $dMode");
+                  return Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Switch(
+                          activeColor: Colors.orange,
+                          inactiveThumbColor: Colors.black,
+                          value: dMode, // !
+                          onChanged: (value) {
+                            setState(() {
+                              DynamicTheme.of(context).setBrightness(
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Brightness.light
+                                      : Brightness.dark);
+                              // !
+                              dMode = !dMode;
+                              setBoolToSP(dMode);
+                              print("inside switch $dMode");
+                            });
+                          }));
+                }
+                return CircularProgressIndicator();
+              },
+            ),
           ],
         ),
         body: new Column(
@@ -405,24 +429,36 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
             ),
           ),
           actions: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(right: 20.0),
-                child: Switch(
-                    activeColor: Colors.deepOrange,
-                    inactiveThumbColor: Colors.black,
-                    value: darkMode, //!
-                    onChanged: (value) {
-                      // * here is dark mode logic using package
-                      setState(() {
-                        DynamicTheme.of(context).setBrightness(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Brightness.light
-                                : Brightness.dark);
-                        // !
-                        darkMode = !darkMode;
-                        // print(_darkMode);
-                      });
-                    })),
+            FutureBuilder(
+              future: getBoolValuesSP(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  dMode = snapshot.data;
+                  print("inside fb $dMode");
+                  return Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Switch(
+                          activeColor: Colors.deepOrange,
+                          inactiveThumbColor: Colors.black,
+                          value: dMode, //!
+                          onChanged: (value) {
+                            // * here is dark mode logic using package
+                            setState(() {
+                              DynamicTheme.of(context).setBrightness(
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Brightness.light
+                                      : Brightness.dark);
+                              // !
+                              dMode = !dMode;
+                              setBoolToSP(dMode);
+                              // print("inside switch $dMode");
+                            });
+                          }));
+                }
+                return CircularProgressIndicator();
+              },
+            ),
           ],
         ),
         body: new Column(
