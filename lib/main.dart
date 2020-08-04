@@ -92,6 +92,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     super.initState();
     _darkMode = _prefs.then((SharedPreferences prefs) {
       dMode = prefs.getBool('darkMode') ?? false;
+      print("inside init>$dMode");
       // setBoolToSP(test);
       return (dMode);
     });
