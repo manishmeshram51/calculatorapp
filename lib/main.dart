@@ -251,7 +251,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   return Padding(
                       padding: EdgeInsets.only(right: 20.0),
                       child: Switch(
-                          activeColor: Colors.orange,
+                          activeColor: Colors.deepOrange,
                           inactiveThumbColor: Colors.black,
                           value: dMode, // !
                           onChanged: (value) {
