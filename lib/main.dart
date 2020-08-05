@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 
@@ -38,7 +42,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       SharedPreferences.getInstance(); // shared preferences
 
   // ! DARKMODE VARIABLE
-  bool dMode; // ! some error
+  bool dMode = false; // ! some error
   String equation = "0";
   String result = "0";
   String expression = "0";
