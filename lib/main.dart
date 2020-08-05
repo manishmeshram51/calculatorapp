@@ -37,9 +37,8 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   Future<SharedPreferences> _prefs =
       SharedPreferences.getInstance(); // shared preferences
 
-  // ! danger
-  Future<bool> _darkMode;
-  bool dMode = false;
+  // ! DARKMODE VARIABLE
+  bool dMode; // ! some error
   String equation = "0";
   String result = "0";
   String expression = "0";
@@ -49,7 +48,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   String angleUnit = "deg"; //can be rad or deg
 
   bool _transitionSA = false; // simple to advaced functions
-  // bool _darkMode = false;
+
   // * to check if string contains numeric or not
   bool isNumeric(String s) {
     if (s == null) {
@@ -66,20 +65,19 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
     return false;
   }
 
-// ! error
+// ! SET shared preference value
   void setBoolToSP(bool boolValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('darkMode', boolValue);
     // print("inside set bool " + boolValue.toString());
   }
 
-  // ! erroe
+  // ! GET value from shared preferece
   getBoolValuesSP() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       // print("inside getboolvaluesf ${prefs.getBool('darkMode')}");
-
-      return prefs.getBool('darkMode');
+      return prefs.getBool('darkMode') ?? false;
     } catch (e) {
       print("getbool" + e);
     }
@@ -87,16 +85,15 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
 
   // ? init state for loading the shared preferences data initially
   @override
+  // ** init shared preference
   void initState() {
-    // ! check
     super.initState();
-    _darkMode = _prefs.then((SharedPreferences prefs) {
+    _prefs.then((SharedPreferences prefs) {
       dMode = prefs.getBool('darkMode') ?? false;
       print("inside init>$dMode");
-      // setBoolToSP(test);
+      setBoolToSP(dMode);
       return (dMode);
     });
-    print("inside init ${_darkMode}");
   }
 
   // * button pressed logic
@@ -174,7 +171,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
           } else if (buttonText == "√x") {
             equation = equation + buttonText.replaceAll("√x", "^(1/2)");
           } else if (buttonText == "1/x") {
-            equation = buttonText.replaceAll("1/x", "1/${equation}");
+            equation = buttonText.replaceAll("1/x", "(1/${equation})");
           } else {
             // ! working here
             if ((equation.length >= 2) &&
@@ -266,8 +263,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                               print("inside switch $dMode");
                             });
                           }));
+                } else {
+                  return Text("XX");
                 }
-                return CircularProgressIndicator();
               },
             ),
           ],
@@ -470,8 +468,9 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                               // print("inside switch $dMode");
                             });
                           }));
+                } else {
+                  return Text("XX");
                 }
-                return CircularProgressIndicator();
               },
             ),
           ],
